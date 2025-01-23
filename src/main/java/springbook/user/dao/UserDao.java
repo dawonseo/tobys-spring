@@ -5,11 +5,12 @@ import springbook.user.domain.User;
 import java.sql.*;
 
 public class UserDao {
-    private SimpleConnectionMaker simpleConnectionMaker;
+    // 인터페이스를 통해 오브젝트를 접근하므로 구체적인 클래스 정보를 알 필요 없다
+    private ConnectionMaker connectionMaker;
 
-    // 상태 관리 필요 없으니, 한 번만 만들어 인스턴스 변수에 저장해 두고 메소드에서 사용하게 한다
+    // 그런데 여기서 클래스 이름 필요
     public UserDao() {
-        simpleConnectionMaker = new SimpleConnectionMaker();
+        connectionMaker = new DConnectionMaker();
     }
 
     public static void main(String[] args) throws ClassNotFoundException, SQLException{
@@ -30,9 +31,10 @@ public class UserDao {
 
         System.out.println(user2.getId() + " 조회 성공");
     }
-    
+
     public void add(User user) throws ClassNotFoundException, SQLException {
-        Connection c = simpleConnectionMaker.makeNewConnection();
+        // 인터페이스에 정의된 메소드 사용하므로 클래스 바뀐다 해도 메소드 이름 변경될 걱정 없다
+        Connection c = connectionMaker.makeConnection();
 
         PreparedStatement ps = c.prepareStatement(
                 "insert into users(id, name, password) value(?, ?, ?)");
@@ -47,7 +49,7 @@ public class UserDao {
     }
 
     public User get(String id) throws ClassNotFoundException, SQLException {
-        Connection c = simpleConnectionMaker.makeNewConnection();
+        Connection c = connectionMaker.makeConnection();
 
         PreparedStatement ps = c.prepareStatement(
                 "select * from users where id = ?"
