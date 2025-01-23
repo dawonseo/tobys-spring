@@ -4,27 +4,35 @@ import springbook.user.domain.User;
 
 import java.sql.*;
 
-public abstract class UserDao {
-//    public static void main(String[] args) throws ClassNotFoundException, SQLException{
-//        UserDao dao = new UserDao();
-//
-//        User user = new User();
-//        user.setId("whiteship");
-//        user.setName("백기선");
-//        user.setPassword("married");
-//
-//        dao.add(user);
-//
-//        System.out.println(user.getId() + " 등록 성공");
-//
-//        User user2 = dao.get(user.getId());
-//        System.out.println(user2.getName());
-//        System.out.println(user2.getPassword());
-//
-//        System.out.println(user2.getId() + " 조회 성공");
-//    }
+public class UserDao {
+    private SimpleConnectionMaker simpleConnectionMaker;
+
+    // 상태 관리 필요 없으니, 한 번만 만들어 인스턴스 변수에 저장해 두고 메소드에서 사용하게 한다
+    public UserDao() {
+        simpleConnectionMaker = new SimpleConnectionMaker();
+    }
+
+    public static void main(String[] args) throws ClassNotFoundException, SQLException{
+        UserDao dao = new UserDao();
+
+        User user = new User();
+        user.setId("whiteship");
+        user.setName("백기선");
+        user.setPassword("married");
+
+        dao.add(user);
+
+        System.out.println(user.getId() + " 등록 성공");
+
+        User user2 = dao.get(user.getId());
+        System.out.println(user2.getName());
+        System.out.println(user2.getPassword());
+
+        System.out.println(user2.getId() + " 조회 성공");
+    }
+    
     public void add(User user) throws ClassNotFoundException, SQLException {
-        Connection c = getConnection();
+        Connection c = simpleConnectionMaker.makeNewConnection();
 
         PreparedStatement ps = c.prepareStatement(
                 "insert into users(id, name, password) value(?, ?, ?)");
@@ -39,7 +47,7 @@ public abstract class UserDao {
     }
 
     public User get(String id) throws ClassNotFoundException, SQLException {
-        Connection c = getConnection();
+        Connection c = simpleConnectionMaker.makeNewConnection();
 
         PreparedStatement ps = c.prepareStatement(
                 "select * from users where id = ?"
@@ -59,22 +67,5 @@ public abstract class UserDao {
 
         return user;
     }
-
-    public abstract Connection getConnection() throws ClassNotFoundException, SQLException;
-
-    // 팩토리 메소드 패턴
-//    public class NUserDao extends UserDao {
-//        @Override
-//        public Connection getConnection() throws ClassNotFoundException, SQLException {
-//            return null;
-//        }
-//    }
-//
-//    public class DUserDao extends UserDao {
-//        @Override
-//        public Connection getConnection() throws ClassNotFoundException, SQLException {
-//            return null;
-//        }
-//    }
 }
 
