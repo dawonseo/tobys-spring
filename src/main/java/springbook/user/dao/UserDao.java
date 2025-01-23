@@ -8,28 +8,9 @@ public class UserDao {
     // 인터페이스를 통해 오브젝트를 접근하므로 구체적인 클래스 정보를 알 필요 없다
     private ConnectionMaker connectionMaker;
 
-    // 그런데 여기서 클래스 이름 필요
-    public UserDao() {
-        connectionMaker = new DConnectionMaker();
-    }
-
-    public static void main(String[] args) throws ClassNotFoundException, SQLException{
-        UserDao dao = new UserDao();
-
-        User user = new User();
-        user.setId("whiteship");
-        user.setName("백기선");
-        user.setPassword("married");
-
-        dao.add(user);
-
-        System.out.println(user.getId() + " 등록 성공");
-
-        User user2 = dao.get(user.getId());
-        System.out.println(user2.getName());
-        System.out.println(user2.getPassword());
-
-        System.out.println(user2.getId() + " 조회 성공");
+    // 외부에서 주입 (생성자 주입)
+    public UserDao(ConnectionMaker connectionMaker) {
+        connectionMaker = connectionMaker;
     }
 
     public void add(User user) throws ClassNotFoundException, SQLException {
